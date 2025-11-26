@@ -146,27 +146,28 @@
                 </tr>
             </thead>
             <tbody>
-                {% if records %}
-                    {% for r in records %}
-                    {% set row_class = 'row-even' if loop.index0 % 2 == 0 else 'row-odd' %}
-                    <tr class="{{ row_class }}">
-                        <td>{{ r['id'] }}</td>
-                        <td>{{ r['date'] }}</td>
-                        <td>{{ r['category'] }}</td>
-                        <td>{{ "%.2f"|format(r['amount']) }}</td>
-                        <td>{{ r['notes'] }}</td>
-                        <td>
-                            <a href="{{ url_for('edit_expense', expense_id=r['id']) }}" class="btn btn-info btn-sm">Edit</a>
-                            <form action="{{ url_for('delete_expense', expense_id=r['id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this expense?');">
-                                <button class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="6">No expenses yet.</td></tr>
-                {% endif %}
-            </tbody>
+    {% if records %}
+        {% for r in records %}
+        {% set row_class = 'row-even' if loop.index0 % 2 == 0 else 'row-odd' %}
+        <tr class="{{ row_class }}">
+            <td>{{ r['id'] }}</td>
+            <td>{{ r['date'] }}</td>
+            <td>{{ r['category'] }}</td>
+            <td>{{ "%.2f"|format(r['amount']) }}</td>
+            <td>{{ r['notes'] }}</td>
+            <td>
+                <a href="{{ url_for('edit_expense', expense_id=r['id']) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <form action="{{ url_for('delete_expense', expense_id=r['id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this expense?');">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr><td colspan="6">No expenses yet.</td></tr>
+    {% endif %}
+</tbody>
+
         </table>
     </div>
 
