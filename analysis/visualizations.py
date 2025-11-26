@@ -1,40 +1,42 @@
+# analysis/visualizations.py
 import plotly.express as px
 import pandas as pd
 
 def create_plots(df):
-    # df expected with date (datetime or str), category, amount
-    if df is None or df.empty:
-        return "<p>No data to show charts.</p>"
+    """Return combined HTML of pie, bar, and cumulative line charts"""
+    if df.empty:
+        return "<p>No data to display charts.</p>"
 
-    # ensure date is datetime
     df = df.copy()
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
 
-    # 1. Pie chart: expenses by category
+    html_output = ""
+
+    # Pie chart: category
     try:
         cat = df.groupby('category', dropna=True)['amount'].sum().reset_index()
-        fig1 = px.pie(cat, names='category', values='amount', title='Expenses by Category')
-        pie_html = fig1.to_html(full_html=False)
-    except Exception:
-        pie_html = "<p>Unable to create pie chart.</p>"
+        fig_pie = px.pie(cat, names='category', values='amount', title='Expenses by Category')
+        html_output += fig_pie.to_html(full_html=False)
+    except:
+        html_output += "<p>Unable to create pie chart</p>"
 
-    # 2. Monthly totals bar chart
+    # Bar chart: monthly
     try:
         df['month'] = df['date'].dt.to_period('M')
         monthly = df.groupby('month')['amount'].sum().reset_index()
         monthly['month'] = monthly['month'].astype(str)
-        fig2 = px.bar(monthly, x='month', y='amount', title='Monthly Expenses')
-        bar_html = fig2.to_html(full_html=False)
-    except Exception:
-        bar_html = "<p>Unable to create monthly bar chart.</p>"
+        fig_bar = px.bar(monthly, x='month', y='amount', title='Monthly Expenses')
+        html_output += fig_bar.to_html(full_html=False)
+    except:
+        html_output += "<p>Unable to create monthly bar chart</p>"
 
-    # 3. Cumulative over time
+    # Line chart: cumulative
     try:
         df_sorted = df.sort_values('date')
         df_sorted['cumulative'] = df_sorted['amount'].cumsum()
-        fig3 = px.line(df_sorted, x='date', y='cumulative', title='Cumulative Expenses Over Time')
-        line_html = fig3.to_html(full_html=False)
-    except Exception:
-        line_html = "<p>Unable to create cumulative chart.</p>"
+        fig_line = px.line(df_sorted, x='date', y='cumulative', title='Cumulative Expenses Over Time')
+        html_output += fig_line.to_html(full_html=False)
+    except:
+        html_output += "<p>Unable to create cumulative chart</p>"
 
-    return pie_html + bar_html + line_html
+    return html_output
